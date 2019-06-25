@@ -2,16 +2,38 @@ import React, { Component } from 'react';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ChatItem from './ChatItem';
 
-export default class Chatlist extends Component {
-  render() {
-    let arr = [1, 2, 3, 4, 5];
+import { getClient } from "../api/client";
 
-    return (
+export default class Chatlist extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      client: null,
+      userId: 6
+    }
+  }
+
+  componentDidMount() {
+    this.loadData();
+  }
+
+  async loadData() {
+    const { userId } = this.state;
+    let client = await getClient(userId);
+    this.setState({ client });
+  }
+
+  render() {
+    const { client, userId } = this.state;
+
+    return client ? (
       <ListGroup as="ul" style={{ paddingTop: 10 }}>
-        {arr.map(i => (
-          <ChatItem />
+        {client.conversations.map(i => (
+          <ChatItem userId={userId} client={i} onClick={this.props.onClick}/>
         ))}
       </ListGroup>
-    );
+    ) : null;
+
   }
 }
